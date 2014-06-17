@@ -130,7 +130,7 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 		sudo clever setup
 
 		cd $DEPLOYMENT_DIR
-		ln -s $BUILDDIR $CURRENTDIR
+		ln -s $BUILDDIR $CURRENTDIR -f
 
 		cd $CURRENTDIR
 

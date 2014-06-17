@@ -4,6 +4,7 @@
 export NODE_ENV='DEV'
 export PROJECT_NAME='wsims_lp'
 export SCRIPT_NAME='release.sh'
+export NODE_PATH='./lib/:./modules/'
 ## ------ END:		Standard Config Elements ------ ##
 
 
@@ -96,11 +97,12 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 	touch $MD5OLD
 	s3cmd -f --config /home/ubuntu/.s3cfg ls $S3_PATH | md5sum | awk '{ print $1 }' > $MD5NEW
 	VERSION_DIFF=`diff $MD5NEW $MD5OLD | wc -l`
+	DEPLOYMENT_DIR="/opt/$PROJECT_NAME"
+	CURRENTDIR="$DEPLOYMENT_DIR/current"
 
 	if [ $VERSION_DIFF -ne 0 ]; then
 		echo "PID:$SCRIPT_PID - $(date) | Release required (MD5 has changed), updating $PROJECT_NAME on $NODE_ENV..."
 
-		DEPLOYMENT_DIR="/opt/$PROJECT_NAME"
 		if [ ! -d $DEPLOYMENT_DIR ]; then
 			echo "PID:$SCRIPT_PID - $(date) | SETUP: the DEPLOYMENT_DIR and set owner as ubuntu..."
 		    sudo mkdir $DEPLOYMENT_DIR
@@ -115,17 +117,20 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 		BUILDNUMBER=$(s3cmd -f -d --config /home/ubuntu/.s3cfg get $S3_PATH /opt/$PROJECT_NAME.tgz 2>&1 | tee | grep -Po "\'x-amz-meta-build_number\':.*?\'([^\']+)\'" | grep -Po "\'[^\']+\'$" | grep -Po "[^\']")
 		BUILDDIR="$DEPLOYMENT_DIR/$BUILDNUMBER"
 
-		echo "Got build number $BUILDNUMBER..."
+		echo "PID:$SCRIPT_PID - $(date) | Making build directory for build $BUILDNUMBER..."
 		mkdir $BUILDDIR
 		sudo chown ubuntu:ubuntu $BUILDDIR
 		sudo chmod 775 $BUILDDIR
+		
+		echo "PID:$SCRIPT_PID - $(date) | Extracting build from tar..."
 		cd $BUILDDIR
 		tar -xzvf /opt/$PROJECT_NAME.tgz
 
-		echo "PID:$SCRIPT_PID - $(date) | Release Running clever setup..."
+		echo "PID:$SCRIPT_PID - $(date) | Running clever setup..."
 		sudo clever setup
+		ln -s $BUILDDIR $CURRENTDIR
+		
 		cd $DEPLOYMENT_DIR
-		ln -s $BUILDDIR $DEPLOYMENT_DIR/current
 
 		if [ $RUNNING_LIST -eq 3 ]; then # Node is running fine
 			echo "PID:$SCRIPT_PID - $(date) | Forever is RESTARTING the $NODE_ENV application..."
@@ -146,13 +151,15 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 		echo "PID:$SCRIPT_PID - $(date) | Release finished!"
 	else 
 
+		cd $DEPLOYMENT_DIR
+
 		if [ $RUNNING_LIST -eq 1 ]; then # No node processes are running through forever
 			echo "PID:$SCRIPT_PID - $(date) | Forever is STARTING the $NODE_ENV application because it was NOT running..."
-			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$PROJECT_NAME/current/app.js
+			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE current/app.js
 		elif [ $RUNNING_LIST -ne 3 ]; then
 			echo "PID:$SCRIPT_PID - $(date) | Forever is running multiple processes, attempting to fix the problem..."
 			forever stopall
-			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$PROJECT_NAME/current/app.js
+			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE current/app.js
 		fi
 
 		echo "PID:$SCRIPT_PID - $(date) | Release not required, exiting"

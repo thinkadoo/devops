@@ -18,7 +18,7 @@ apt-get install -y rsyslog
 apt-get install -y git
 
 echo "Configure and start newrelic..."
-apt-get install newrelic-sysmond
+apt-get install -y newrelic-sysmond
 # nrsysmond-config --set license_key=KEYHERE
 # /etc/init.d/newrelic-sysmond start
 

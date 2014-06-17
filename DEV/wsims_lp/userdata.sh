@@ -11,6 +11,10 @@ export S3_DEPLOYMENT_PASSPHRASE='wsims_lp_deployment_secret_dfsdljk123'
 
 
 ## ------ START:	Standard Node AMI UserData Script ------ ##
+sudo npm install -g grunt-cli
+sudo npm install -g bower
+sudo npm install -g cleverstack-cli
+
 sed -i -r "s/(access_key *= *).*/\1$S3_DEPLOYMENT_KEY/" /home/ubuntu/.s3cfg
 sed -i -r "s/(secret_key *= *).*/\1$S3_DEPLOYMENT_SECRET/" /home/ubuntu/.s3cfg
 sed -i -r "s/(gpg_passphrase *= *).*/\1$S3_DEPLOYMENT_PASSPHRASE/" /home/ubuntu/.s3cfg

@@ -5,6 +5,7 @@ export NODE_ENV='DEV'
 export PROJECT_NAME='wsims_lp'
 export SCRIPT_NAME='release.sh'
 export NODE_PATH='./lib/:./modules/'
+export DEBUG=*
 ## ------ END:		Standard Config Elements ------ ##
 
 
@@ -130,7 +131,7 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 		sudo clever setup
 
 		cd $DEPLOYMENT_DIR
-		ln -s $BUILDDIR $CURRENTDIR -f
+		ln -f -n -s $BUILDDIR $CURRENTDIR
 
 		cd $CURRENTDIR
 

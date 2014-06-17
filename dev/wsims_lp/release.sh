@@ -2,7 +2,8 @@
 
 ## ------ START:	Standard Config Elements ------ ##
 export NODE_ENV='DEV'
-REPO_NAME='wsims_lp'
+export PROJECT_NAME='wsims_lp'
+export SCRIPT_NAME='release.sh'
 ## ------ END:		Standard Config Elements ------ ##
 
 
@@ -49,17 +50,17 @@ RELEASE_MD5_CURRENT='/tmp/releaseCurrentMd5.txt'
 RELEASE_MD5_NEW='/tmp/releaseNewMd5.txt'
 touch $RELEASE_MD5_CURRENT
 
-NEW_RELEASE_NOT_EMPTY=`s3cmd -f --config /home/ubuntu/.s3cfg ls s3://ite-devops/$NODE_ENV/$REPO_NAME.sh | wc -l`
+NEW_RELEASE_NOT_EMPTY=`s3cmd -f --config /home/ubuntu/.s3cfg ls s3://ite-devops/$NODE_ENV/$PROJECT_NAME/$SCRIPT_NAME | wc -l`
 if [ $NEW_RELEASE_NOT_EMPTY -ne 0 ]; then
 
 	# Get the latest hash
-	s3cmd -f --config /home/ubuntu/.s3cfg ls s3://ite-devops/$NODE_ENV/$REPO_NAME.sh | md5sum | awk '{ print $1 }' > $RELEASE_MD5_NEW
+	s3cmd -f --config /home/ubuntu/.s3cfg ls s3://ite-devops/$NODE_ENV/$PROJECT_NAME/$SCRIPT_NAME | md5sum | awk '{ print $1 }' > $RELEASE_MD5_NEW
 	
 	RELEASE_VERSION_DIFF=`diff $RELEASE_MD5_NEW $RELEASE_MD5_CURRENT | wc -l`
 	if [ $RELEASE_VERSION_DIFF -ne 0 ]
 	then
 		echo "PID:$SCRIPT_PID - $(date) | Release SCRIPT MD5 has changed, fetching a new copy of this release script..."
-		s3cmd -f --config /home/ubuntu/.s3cfg get s3://ite-devops/$NODE_ENV/$REPO_NAME.sh /opt/$REPO_NAME.sh
+		s3cmd -f --config /home/ubuntu/.s3cfg get s3://ite-devops/$NODE_ENV/$PROJECT_NAME/$SCRIPT_NAME /opt/$PROJECT_NAME/$SCRIPT_NAME
 
 		echo "PID:$SCRIPT_PID - $(date) | Release SCRIPT was updated, updating RELEASE_MD5_CURRENT"
 		cat $RELEASE_MD5_NEW > $RELEASE_MD5_CURRENT
@@ -73,18 +74,18 @@ fi
 
 echo "PID:$SCRIPT_PID - $(date) | Updating crontab for user ubuntu..."
 
-echo "* * * * * bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log
-* * * * * sleep 10; bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log
-* * * * * sleep 20; bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log
-* * * * * sleep 30; bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log
-* * * * * sleep 40; bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log
-* * * * * sleep 50; bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log" > ~/ubuntu.crontab
+echo "* * * * * bash /opt/$PROJECT_NAME/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
+* * * * * sleep 10; bash /opt/$PROJECT_NAME/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
+* * * * * sleep 20; bash /opt/$PROJECT_NAME/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
+* * * * * sleep 30; bash /opt/$PROJECT_NAME/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
+* * * * * sleep 40; bash /opt/$PROJECT_NAME/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
+* * * * * sleep 50; bash /opt/$PROJECT_NAME/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log" > ~/ubuntu.crontab
 crontab ~/ubuntu.crontab
 
-S3_PATH="s3://ite-devops/$NODE_ENV/$REPO_NAME.tgz"
+S3_PATH="s3://ite-devops/$NODE_ENV/$PROJECT_NAME.tgz"
 RUNNING_LIST=`forever list | grep -c '\n'`
-FOREVER_PID_FILE="/opt/$REPO_NAME.pid"
-FOREVER_LOG_FILE="/opt/$REPO_NAME.log"
+FOREVER_PID_FILE="/opt/$PROJECT_NAME.pid"
+FOREVER_LOG_FILE="/opt/$PROJECT_NAME.log"
 
 # Only do a release if we did not just get a new release script
 if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
@@ -97,9 +98,9 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 	VERSION_DIFF=`diff $MD5NEW $MD5OLD | wc -l`
 
 	if [ $VERSION_DIFF -ne 0 ]; then
-		echo "PID:$SCRIPT_PID - $(date) | Release required (MD5 has changed), updating $REPO_NAME on $NODE_ENV..."
+		echo "PID:$SCRIPT_PID - $(date) | Release required (MD5 has changed), updating $PROJECT_NAME on $NODE_ENV..."
 
-		DEPLOYMENT_DIR="/opt/$REPO_NAME"
+		DEPLOYMENT_DIR="/opt/$PROJECT_NAME"
 		if [ ! -d $DEPLOYMENT_DIR ]; then
 			echo "PID:$SCRIPT_PID - $(date) | SETUP: the DEPLOYMENT_DIR and set owner as ubuntu..."
 		    sudo mkdir $DEPLOYMENT_DIR
@@ -110,11 +111,11 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 		cd $DEPLOYMENT_DIR
 
 		echo "PID:$SCRIPT_PID - $(date) | Release starting download of new code release (S3)..."
-		s3cmd -f --config /home/ubuntu/.s3cfg get $S3_PATH /opt/$REPO_NAME.tgz
-		mkdir /opt/$REPO_NAME
-		sudo chown ubuntu:ubuntu /opt/$REPO_NAME
-		sudo chmod 775 /opt/$REPO_NAME
-		tar -xzvf /opt/$REPO_NAME.tgz
+		s3cmd -f --config /home/ubuntu/.s3cfg get $S3_PATH /opt/$PROJECT_NAME.tgz
+		mkdir /opt/$PROJECT_NAME
+		sudo chown ubuntu:ubuntu /opt/$PROJECT_NAME
+		sudo chmod 775 /opt/$PROJECT_NAME
+		tar -xzvf /opt/$PROJECT_NAME.tgz
 
 		echo "PID:$SCRIPT_PID - $(date) | Release Running NPM install & init+update git submodules..."
 		sudo npm install
@@ -142,11 +143,11 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 
 		if [ $RUNNING_LIST -eq 1 ]; then # No node processes are running through forever
 			echo "PID:$SCRIPT_PID - $(date) | Forever is STARTING the $NODE_ENV application because it was NOT running..."
-			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$REPO_NAME/app.js
+			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$PROJECT_NAME/app.js
 		elif [ $RUNNING_LIST -ne 3 ]; then
 			echo "PID:$SCRIPT_PID - $(date) | Forever is running multiple processes, attempting to fix the problem..."
 			forever stopall
-			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$REPO_NAME/app.js
+			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$PROJECT_NAME/app.js
 		fi
 
 		echo "PID:$SCRIPT_PID - $(date) | Release not required, exiting"

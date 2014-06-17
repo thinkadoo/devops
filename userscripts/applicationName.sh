@@ -49,17 +49,17 @@ RELEASE_MD5_CURRENT='/tmp/releaseCurrentMd5.txt'
 RELEASE_MD5_NEW='/tmp/releaseNewMd5.txt'
 touch $RELEASE_MD5_CURRENT
 
-NEW_RELEASE_NOT_EMPTY=`s3cmd -f --config /home/ec2-user/.s3cfg ls s3://ite-devops/$NODE_ENV/$REPO_NAME.sh | wc -l`
+NEW_RELEASE_NOT_EMPTY=`s3cmd -f --config /home/ubuntu/.s3cfg ls s3://ite-devops/$NODE_ENV/$REPO_NAME.sh | wc -l`
 if [ $NEW_RELEASE_NOT_EMPTY -ne 0 ]; then
 
 	# Get the latest hash
-	s3cmd -f --config /home/ec2-user/.s3cfg ls s3://ite-devops/$NODE_ENV/$REPO_NAME.sh | md5sum | awk '{ print $1 }' > $RELEASE_MD5_NEW
+	s3cmd -f --config /home/ubuntu/.s3cfg ls s3://ite-devops/$NODE_ENV/$REPO_NAME.sh | md5sum | awk '{ print $1 }' > $RELEASE_MD5_NEW
 	
 	RELEASE_VERSION_DIFF=`diff $RELEASE_MD5_NEW $RELEASE_MD5_CURRENT | wc -l`
 	if [ $RELEASE_VERSION_DIFF -ne 0 ]
 	then
 		echo "PID:$SCRIPT_PID - $(date) | Release SCRIPT MD5 has changed, fetching a new copy of this release script..."
-		s3cmd -f --config /home/ec2-user/.s3cfg get s3://ite-devops/$NODE_ENV/$REPO_NAME.sh /opt/$REPO_NAME.sh
+		s3cmd -f --config /home/ubuntu/.s3cfg get s3://ite-devops/$NODE_ENV/$REPO_NAME.sh /opt/$REPO_NAME.sh
 
 		echo "PID:$SCRIPT_PID - $(date) | Release SCRIPT was updated, updating RELEASE_MD5_CURRENT"
 		cat $RELEASE_MD5_NEW > $RELEASE_MD5_CURRENT
@@ -71,15 +71,15 @@ fi
 
 ## ------ START:	Standard Node AMI Release Script ------ ##
 
-echo "PID:$SCRIPT_PID - $(date) | Updating crontab for user ec2-user..."
+echo "PID:$SCRIPT_PID - $(date) | Updating crontab for user ubuntu..."
 
 echo "* * * * * bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log
 * * * * * sleep 10; bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log
 * * * * * sleep 20; bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log
 * * * * * sleep 30; bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log
 * * * * * sleep 40; bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log
-* * * * * sleep 50; bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log" > ~/ec2-user.crontab
-crontab ~/ec2-user.crontab
+* * * * * sleep 50; bash /opt/$REPO_NAME.sh 2>&1 >> /tmp/deploy.log" > ~/ubuntu.crontab
+crontab ~/ubuntu.crontab
 
 S3_PATH="s3://ite-devops/$NODE_ENV/$REPO_NAME.tgz"
 RUNNING_LIST=`forever list | grep -c '\n'`
@@ -93,7 +93,7 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 	MD5OLD='/tmp/oldMd5.txt'
 	MD5NEW='/tmp/newMd5.txt'
 	touch $MD5OLD
-	s3cmd -f --config /home/ec2-user/.s3cfg ls $S3_PATH | md5sum | awk '{ print $1 }' > $MD5NEW
+	s3cmd -f --config /home/ubuntu/.s3cfg ls $S3_PATH | md5sum | awk '{ print $1 }' > $MD5NEW
 	VERSION_DIFF=`diff $MD5NEW $MD5OLD | wc -l`
 
 	if [ $VERSION_DIFF -ne 0 ]; then
@@ -101,18 +101,18 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 
 		DEPLOYMENT_DIR="/opt/$REPO_NAME"
 		if [ ! -d $DEPLOYMENT_DIR ]; then
-			echo "PID:$SCRIPT_PID - $(date) | SETUP: the DEPLOYMENT_DIR and set owner as ec2-user..."
+			echo "PID:$SCRIPT_PID - $(date) | SETUP: the DEPLOYMENT_DIR and set owner as ubuntu..."
 		    sudo mkdir $DEPLOYMENT_DIR
-		    sudo chown ec2-user:ec2-user $DEPLOYMENT_DIR
+		    sudo chown ubuntu:ubuntu $DEPLOYMENT_DIR
 		fi
 
 		echo "PID:$SCRIPT_PID - $(date) | Changing to $DEPLOYMENT_DIR (DEPLOYMENT_DIR)..."
 		cd $DEPLOYMENT_DIR
 
 		echo "PID:$SCRIPT_PID - $(date) | Release starting download of new code release (S3)..."
-		s3cmd -f --config /home/ec2-user/.s3cfg get $S3_PATH /opt/$REPO_NAME.tgz
+		s3cmd -f --config /home/ubuntu/.s3cfg get $S3_PATH /opt/$REPO_NAME.tgz
 		mkdir /opt/$REPO_NAME
-		sudo chown ec2-user:ec2-user /opt/$REPO_NAME
+		sudo chown ubuntu:ubuntu /opt/$REPO_NAME
 		sudo chmod 775 /opt/$REPO_NAME
 		tar -xzvf /opt/$REPO_NAME.tgz
 

@@ -119,8 +119,8 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 		mkdir $BUILDDIR
 		sudo chown ubuntu:ubuntu $BUILDDIR
 		sudo chmod 775 $BUILDDIR
-		tar -xzvf /opt/$PROJECT_NAME.tgz $BUILDDIR
 		cd $BUILDDIR
+		tar -xzvf /opt/$PROJECT_NAME.tgz
 
 		echo "PID:$SCRIPT_PID - $(date) | Release Running clever setup..."
 		sudo clever setup

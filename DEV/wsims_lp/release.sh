@@ -60,7 +60,7 @@ if [ $NEW_RELEASE_NOT_EMPTY -ne 0 ]; then
 	if [ $RELEASE_VERSION_DIFF -ne 0 ]
 	then
 		echo "PID:$SCRIPT_PID - $(date) | Release SCRIPT MD5 has changed, fetching a new copy of this release script..."
-		s3cmd -f --config /home/ubuntu/.s3cfg get s3://ite-devops/$NODE_ENV/$PROJECT_NAME/$SCRIPT_NAME /opt/$PROJECT_NAME/$SCRIPT_NAME
+		s3cmd -f --config /home/ubuntu/.s3cfg get s3://ite-devops/$NODE_ENV/$PROJECT_NAME/$SCRIPT_NAME /opt/$SCRIPT_NAME
 
 		echo "PID:$SCRIPT_PID - $(date) | Release SCRIPT was updated, updating RELEASE_MD5_CURRENT"
 		cat $RELEASE_MD5_NEW > $RELEASE_MD5_CURRENT
@@ -74,12 +74,12 @@ fi
 
 echo "PID:$SCRIPT_PID - $(date) | Updating crontab for user ubuntu..."
 
-echo "* * * * * bash /opt/$PROJECT_NAME/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
-* * * * * sleep 10; bash /opt/$PROJECT_NAME/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
-* * * * * sleep 20; bash /opt/$PROJECT_NAME/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
-* * * * * sleep 30; bash /opt/$PROJECT_NAME/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
-* * * * * sleep 40; bash /opt/$PROJECT_NAME/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
-* * * * * sleep 50; bash /opt/$PROJECT_NAME/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log" > ~/ubuntu.crontab
+echo "* * * * * bash /opt/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
+* * * * * sleep 10; bash /opt/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
+* * * * * sleep 20; bash /opt/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
+* * * * * sleep 30; bash /opt/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
+* * * * * sleep 40; bash /opt/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
+* * * * * sleep 50; bash /opt/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log" > ~/ubuntu.crontab
 crontab ~/ubuntu.crontab
 
 S3_PATH="s3://ite-devops/$NODE_ENV/$PROJECT_NAME.tgz"
@@ -143,11 +143,11 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 
 		if [ $RUNNING_LIST -eq 1 ]; then # No node processes are running through forever
 			echo "PID:$SCRIPT_PID - $(date) | Forever is STARTING the $NODE_ENV application because it was NOT running..."
-			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$PROJECT_NAME/app.js
+			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/app.js
 		elif [ $RUNNING_LIST -ne 3 ]; then
 			echo "PID:$SCRIPT_PID - $(date) | Forever is running multiple processes, attempting to fix the problem..."
 			forever stopall
-			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$PROJECT_NAME/app.js
+			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/app.js
 		fi
 
 		echo "PID:$SCRIPT_PID - $(date) | Release not required, exiting"

@@ -128,9 +128,11 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 
 		echo "PID:$SCRIPT_PID - $(date) | Running clever setup..."
 		sudo clever setup
-		ln -s $BUILDDIR $CURRENTDIR
-		
+
 		cd $DEPLOYMENT_DIR
+		ln -s $BUILDDIR $CURRENTDIR
+
+		cd $CURRENTDIR
 
 		if [ $RUNNING_LIST -eq 3 ]; then # Node is running fine
 			echo "PID:$SCRIPT_PID - $(date) | Forever is RESTARTING the $NODE_ENV application..."
@@ -151,7 +153,7 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 		echo "PID:$SCRIPT_PID - $(date) | Release finished!"
 	else 
 
-		cd $DEPLOYMENT_DIR
+		cd $CURRENTDIR
 
 		if [ $RUNNING_LIST -eq 1 ]; then # No node processes are running through forever
 			echo "PID:$SCRIPT_PID - $(date) | Forever is STARTING the $NODE_ENV application because it was NOT running..."

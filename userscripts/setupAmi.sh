@@ -1,8 +1,10 @@
 #!/bin/bash
 
+echo "Add newrelic repo to sources list..."
 # Add new relic repo to sources list
-wget -O /etc/apt/sources.list.d/newrelic.list http://download.newrelic.com/debian/newrelic.list
-apt-key adv --keyserver hkp://subkeys.pgp.net --recv-keys 548C16BF
+# echo deb http://apt.newrelic.com/debian/ newrelic non-free >> /etc/apt/sources.list.d/newrelic.list
+# wget -O /etc/apt/sources.list.d/newrelic.list http://download.newrelic.com/debian/newrelic.list
+# sudo apt-key adv --keyserver hkp://subkeys.pgp.net --recv-keys 548C16BF
 
 echo "Running update & upgrade..."
 apt-get update
@@ -18,7 +20,7 @@ apt-get install -y rsyslog
 apt-get install -y git
 
 echo "Configure and start newrelic..."
-apt-get install -y newrelic-sysmond
+# apt-get install -y newrelic-sysmond
 # nrsysmond-config --set license_key=KEYHERE
 # /etc/init.d/newrelic-sysmond start
 
@@ -26,7 +28,7 @@ echo "Installing node..."
 apt-get install -y python-software-properties
 apt-add-repository -y ppa:chris-lea/node.js
 apt-get update
-apt-get install -y nodejs npm
+apt-get install -y nodejs
 
 echo "Installing forever..."
 npm install -g forever

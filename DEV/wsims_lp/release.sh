@@ -105,33 +105,38 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 			echo "PID:$SCRIPT_PID - $(date) | SETUP: the DEPLOYMENT_DIR and set owner as ubuntu..."
 		    sudo mkdir $DEPLOYMENT_DIR
 		    sudo chown ubuntu:ubuntu $DEPLOYMENT_DIR
+		    sudo chmod 775 $DEPLOYMENT_DIR
 		fi
 
 		echo "PID:$SCRIPT_PID - $(date) | Changing to $DEPLOYMENT_DIR (DEPLOYMENT_DIR)..."
 		cd $DEPLOYMENT_DIR
 
 		echo "PID:$SCRIPT_PID - $(date) | Release starting download of new code release (S3)..."
-		s3cmd -f --config /home/ubuntu/.s3cfg get $S3_PATH /opt/$PROJECT_NAME.tgz
-		mkdir /opt/$PROJECT_NAME
-		sudo chown ubuntu:ubuntu /opt/$PROJECT_NAME
-		sudo chmod 775 /opt/$PROJECT_NAME
-		tar -xzvf /opt/$PROJECT_NAME.tgz
+		BUILDNUMBER=$(s3cmd -f -d --config /home/ubuntu/.s3cfg get $S3_PATH /opt/$PROJECT_NAME.tgz 2>&1 | tee | grep -Po "\'x-amz-meta-build_number\':.*?\'([^\']+)\'" | grep -Po "\'[^\']+\'$" | grep -Po "[^\']")
+		BUILDDIR="$DEPLOYMENT_DIR/$BUILDNUMBER"
 
-		echo "PID:$SCRIPT_PID - $(date) | Release Running NPM install & init+update git submodules..."
-		sudo npm install
-		sudo git submodule init
-		sudo git submodule update
+		echo "Got build number $BUILDNUMBER..."
+		mkdir $BUILDDIR
+		sudo chown ubuntu:ubuntu $BUILDDIR
+		sudo chmod 775 $BUILDDIR
+		tar -xzvf /opt/$PROJECT_NAME.tgz $BUILDDIR
+		cd $BUILDDIR
+
+		echo "PID:$SCRIPT_PID - $(date) | Release Running clever setup..."
+		sudo clever setup
+		cd $DEPLOYMENT_DIR
+		ln -s $BUILDDIR $DEPLOYMENT_DIR/current
 
 		if [ $RUNNING_LIST -eq 3 ]; then # Node is running fine
 			echo "PID:$SCRIPT_PID - $(date) | Forever is RESTARTING the $NODE_ENV application..."
 			forever restart 0
 		elif [ $RUNNING_LIST -eq 1 ]; then # No node processes are running through forever
 			echo "PID:$SCRIPT_PID - $(date) | Forever is STARTING the $NODE_ENV application because it was NOT running..."
-			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE app.js
+			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE current/app.js
 		else
 			echo "PID:$SCRIPT_PID - $(date) | Forever is running multiple processes, attempting to fix the problem..."
 			forever stopall
-			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE app.js
+			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE current/app.js
 		fi
 
 		# Update the md5
@@ -143,11 +148,11 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 
 		if [ $RUNNING_LIST -eq 1 ]; then # No node processes are running through forever
 			echo "PID:$SCRIPT_PID - $(date) | Forever is STARTING the $NODE_ENV application because it was NOT running..."
-			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$PROJECT_NAME/app.js
+			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$PROJECT_NAME/current/app.js
 		elif [ $RUNNING_LIST -ne 3 ]; then
 			echo "PID:$SCRIPT_PID - $(date) | Forever is running multiple processes, attempting to fix the problem..."
 			forever stopall
-			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$PROJECT_NAME/app.js
+			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$PROJECT_NAME/current/app.js
 		fi
 
 		echo "PID:$SCRIPT_PID - $(date) | Release not required, exiting"

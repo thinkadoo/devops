@@ -82,7 +82,7 @@ echo "* * * * * bash /opt/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log
 * * * * * sleep 50; bash /opt/$SCRIPT_NAME 2>&1 >> /tmp/deploy.log" > ~/ubuntu.crontab
 crontab ~/ubuntu.crontab
 
-S3_PATH="s3://ite-devops/$NODE_ENV/$PROJECT_NAME.tgz"
+S3_PATH="s3://ite-devops/$NODE_ENV/$PROJECT_NAME/$PROJECT_NAME.tgz"
 RUNNING_LIST=`forever list | grep -c '\n'`
 FOREVER_PID_FILE="/opt/$PROJECT_NAME.pid"
 FOREVER_LOG_FILE="/opt/$PROJECT_NAME.log"
@@ -143,11 +143,11 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 
 		if [ $RUNNING_LIST -eq 1 ]; then # No node processes are running through forever
 			echo "PID:$SCRIPT_PID - $(date) | Forever is STARTING the $NODE_ENV application because it was NOT running..."
-			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/app.js
+			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$PROJECT_NAME/app.js
 		elif [ $RUNNING_LIST -ne 3 ]; then
 			echo "PID:$SCRIPT_PID - $(date) | Forever is running multiple processes, attempting to fix the problem..."
 			forever stopall
-			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/app.js
+			forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE /opt/$PROJECT_NAME/app.js
 		fi
 
 		echo "PID:$SCRIPT_PID - $(date) | Release not required, exiting"

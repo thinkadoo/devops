@@ -129,6 +129,7 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 
 		echo "PID:$SCRIPT_PID - $(date) | Running clever setup..."
 		sudo clever setup
+		sudo chown -R ubuntu:ubuntu $BUILDDIR/node_modules
 
 		cd $DEPLOYMENT_DIR
 		ln -f -n -s $BUILDDIR $CURRENTDIR
@@ -144,7 +145,7 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 			echo "PID:$SCRIPT_PID - $(date) | Forever is running multiple processes, attempting to fix the problem..."
 			forever stopall
 		fi
-		
+
 		forever start --spinSleepTime 1000 --pidFile $FOREVER_PID_FILE -a -l $FOREVER_LOG_FILE app.js
 
 		# Update the md5

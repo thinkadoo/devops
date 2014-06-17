@@ -118,6 +118,11 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 		BUILDNUMBER=$(s3cmd -f -d --config /home/ubuntu/.s3cfg get $S3_PATH /opt/$PROJECT_NAME.tgz 2>&1 | tee | grep -Po "\'x-amz-meta-build_number\':.*?\'([^\']+)\'" | grep -Po "\'[^\']+\'$" | grep -Po "[^\']")
 		BUILDDIR="$DEPLOYMENT_DIR/$BUILDNUMBER"
 
+		if [ -d $BUILDDIR ]; then
+			echo "PID:$SCRIPT_PID - $(date) | Deleting build directory for build $BUILDNUMBER..."
+			sudo rm -rf $BUILDDIR
+		fi
+
 		echo "PID:$SCRIPT_PID - $(date) | Making build directory for build $BUILDNUMBER..."
 		mkdir $BUILDDIR
 		sudo chown ubuntu:ubuntu $BUILDDIR

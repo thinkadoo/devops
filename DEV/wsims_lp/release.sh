@@ -115,7 +115,7 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 		cd $DEPLOYMENT_DIR
 
 		echo "PID:$SCRIPT_PID - $(date) | Release starting download of new code release (S3)..."
-		BUILDNUMBER=$(s3cmd -f -d --config /home/ubuntu/.s3cfg get $S3_PATH /opt/$PROJECT_NAME.tgz 2>&1 | tee | grep -Po "\'x-amz-meta-build_number\':.*?\'([^\']+)\'" | grep -Po "\'[^\']+\'$" | grep -Po "[^\']")
+		BUILDNUMBER=$(s3cmd -f -d --config /home/ubuntu/.s3cfg get $S3_PATH /opt/$PROJECT_NAME.tgz 2>&1 | tee | grep -Po "\'x-amz-meta-build_number\':.*?\'([^\']+)\'" | grep -Po "\'[^\']+\'$" | grep -Po "[^\']+")
 		BUILDDIR="$DEPLOYMENT_DIR/$BUILDNUMBER"
 
 		if [ -d $BUILDDIR ]; then

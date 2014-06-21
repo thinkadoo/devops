@@ -138,6 +138,9 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 		echo "PID:$SCRIPT_PID - $(date) | Running clever setup..."
 		sudo clever setup
 		sudo chown -R ubuntu:ubuntu $BUILDDIR/node_modules
+		
+		echo "PID:$SCRIPT_PID - $(date) | Running grunt db to rebase the database..."
+		grunt db
 
 		cd $DEPLOYMENT_DIR
 		ln -f -n -s $BUILDDIR $CURRENTDIR

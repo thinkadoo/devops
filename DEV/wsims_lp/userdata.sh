@@ -5,6 +5,7 @@ export ENV='DEV'
 export PROJECT_NAME='wsims_lp'
 export SCRIPT_NAME='release.sh'
 export S3_DEPLOYMENT_KEY='AKIAIQV3U25VZB336RDQ'
+# Rember that if this contains \ or / you need to escape that with \
 export S3_DEPLOYMENT_SECRET='CBI+AY45jxeK8VNBg\/4rKC+uGb5F7Q3Nx\/OAbynN'
 export S3_DEPLOYMENT_PASSPHRASE='wsims_lp_deployment_secret_dfsdljk123'
 ## ------ END:		Standard Config Elements ------ ##

@@ -1,20 +1,26 @@
 #!/bin/bash
 
 ## ------ START:	Standard Config Elements ------ ##
-export ENV='$ENTER_ENV_NAME_HERE'
-export SCRIPT_NAME='$REPO_NAME.sh'
-export S3_DEPLOYMENT_KEY='$S3_IAM_KEY'
-export S3_DEPLOYMENT_SECRET='S3_IAM_SECRET'
-export S3_DEPLOYMENT_PASSPHRASE='S3_IAM_PASSPHRASE'
+export ENV='$NODE_ENV'
+export PROJECT_NAME='$PROJECT_NAME'
+export SCRIPT_NAME='release.sh'
+export S3_DEPLOYMENT_KEY='$ACCESS_KEY'
+# Rember that if this contains \ or / you need to escape that with \
+export S3_DEPLOYMENT_SECRET='$SECRET_KEY'
+export S3_DEPLOYMENT_PASSPHRASE='$DEPLOYMENT_PASSPHRASE'
 ## ------ END:		Standard Config Elements ------ ##
 
 
 ## ------ START:	Standard Node AMI UserData Script ------ ##
-sudo sed -i -r "s/(access_key *= *).*/\1$S3_DEPLOYMENT_KEY/" /home/ubuntu/.s3cfg
-sudo sed -i -r "s/(secret_key *= *).*/\1$S3_DEPLOYMENT_SECRET/" /home/ubuntu/.s3cfg
-sudo sed -i -r "s/(gpg_passphrase *= *).*/\1$S3_DEPLOYMENT_PASSPHRASE/" /home/ubuntu/.s3cfg
+sudo npm install -g grunt-cli
+sudo npm install -g bower
+sudo npm install -g cleverstack-cli
 
-S3_APP_SCRIPT_PATH="s3://ite-devops/$ENV/$SCRIPT_NAME"
+sed -i -r "s/(access_key *= *).*/\1$S3_DEPLOYMENT_KEY/" /home/ubuntu/.s3cfg
+sed -i -r "s/(secret_key *= *).*/\1$S3_DEPLOYMENT_SECRET/" /home/ubuntu/.s3cfg
+sed -i -r "s/(gpg_passphrase *= *).*/\1$S3_DEPLOYMENT_PASSPHRASE/" /home/ubuntu/.s3cfg
+
+S3_APP_SCRIPT_PATH="s3://ite-devops/$ENV/$PROJECT_NAME/$SCRIPT_NAME"
 
 # Store the launch script MD5 hash
 s3cmd -f --config /home/ubuntu/.s3cfg ls $S3_APP_SCRIPT_PATH | md5sum | awk '{ print $1 }' > /tmp/releaseCurrentMd5.txt

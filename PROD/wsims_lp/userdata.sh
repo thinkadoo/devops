@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## ------ START:	Standard Config Elements ------ ##
-export ENV='DEV'
+export ENV='PROD'
 export PROJECT_NAME='wsims_lp'
 export SCRIPT_NAME='release.sh'
 export S3_DEPLOYMENT_KEY='AKIAIXQVFPNVFROQMJMQ'

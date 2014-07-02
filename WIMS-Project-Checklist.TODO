@@ -70,8 +70,7 @@ Load Balancing:
 
 Nginx:
      ☐ Setup Nginx with MySql and Tarball deployment
-
-
+         
 Monitoring:
      ☐ Add New Relic configuration 
      ☐ Add Zabbix Automatic Configuration 

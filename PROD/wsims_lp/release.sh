@@ -5,7 +5,7 @@ export NODE_ENV='PROD'
 export PROJECT_NAME='wsims_lp'
 export SCRIPT_NAME='release.sh'
 export NODE_PATH='./lib/:./modules/'
-## export DEBUG=*
+export DEBUG=*
 ## ------ END:		Standard Config Elements ------ ##
 
 

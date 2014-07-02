@@ -37,9 +37,6 @@ mkdir /opt
 chmod 777 /opt
 chown ubuntu:ubuntu /opt
 
-# Ubuntu cannot bind port 80, so we do this here in userdata as root so it redirects 80 to 8080 (where node is running)
-sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
-
 ## Install and configure NGINX (this serves the frontend from S3 and forwards+rewrites anything /api/* to localhost:8080/*)
 sudo apt-get -y install nginx
 sudo cat << 'EOF' > /etc/nginx/nginx.conf
@@ -126,7 +123,7 @@ http {
 
                 location / {
 
-                        proxy_pass         http://ai-app-dev.s3-website-us-east-1.amazonaws.com/;
+                        proxy_pass         "http://$S3_BUCKET_NAME/";
                         proxy_redirect     off;
                         proxy_set_header   Host             "$S3_BUCKET_NAME";
                         proxy_set_header   X-Real-IP        $remote_addr;

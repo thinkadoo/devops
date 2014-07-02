@@ -1,0 +1,80 @@
+New Project Checklist:
+
+  Git:
+   ✔ Create 2 new repos and seed with the base project repos for @done (14-06-30 10:13)
+       ✔ Backend @done (14-06-30 10:13)
+       ✔ Frontend @done (14-06-30 10:13)
+  
+  Release Scripts:
+    ✔ Create base userdata and release.sh script for each environment using the git repos you just created @done (14-06-30 10:13)
+        ✔ DEV @done (14-06-30 10:13)
+        ✔ STAG @done (14-06-30 10:13)
+        ✔ PROD @done (14-06-30 10:13)
+    ✔ Place userdata.sh and release.sh script in each environments location inside the DevOPS repo @done (14-06-30 10:13)
+    ✔ Push commit to git so jenkins will publish these scripts to s3://ite-deploy @done (14-06-30 10:13)
+
+  Jenkins:
+    ✔ Create Backend and Frontend Project's configuration for each environment using template @done (14-06-30 10:13)
+        ✔ DEV @done (14-06-30 10:13)
+        ✔ STAG @done (14-06-30 10:13
+        ✔ PROD @done (14-06-30 10:13)
+
+  AWS:
+
+    Prerequisites:
+     ✔ Create new keypair for project inside amazon ( $projectName.pem ) @done (14-06-30 10:14)
+         ✔ Add keypair into DevOPS repo and push commit so jenkins will publish it at s3://ite-deploy-keys/$projectName.pem @done (14-06-30 10:14)
+     ☐ (Optional) Share NODE_AMI (ami_id) with Clients AWS Account
+     ✔ Create new Amazon VPC, subnets and NAT Gateway ( $projectName_$env ) @done (14-06-30 12:35)
+         ✔ Add name tags to VPC, Subnets and NAT Gateway @done (14-06-30 12:06)
+         ✔ Create "DEV" security group: ( 80 (HTTP) 0.0.0.0/0 443 (HTTPS) 0.0.0.0/0 3306 (MYSQL) ) @done (14-06-30 12:34)
+         ✔ Create "PROD" security group: ( 80 (HTTP) 0.0.0.0/0 443 (HTTPS) 0.0.0.0/0 3306 (MYSQL) ) @done (14-06-30 12:34)
+     ✔ Create new IAM user and keys, add it to the Its Deploy group so that the servers have access to the S3 bucket to get copies of release.sh and the actual projects tgz file @done (14-06-30 12:36)
+
+    ElastiCache:
+     ✔ Create Cache Subnet group associating newly created VPC with Elasticache instance @done (14-06-30 12:36)
+     ✔ Launch DEV REDIS server and make sure its in the right security group for DEV security group to access it @done (14-06-30 12:45)
+     ✔ Launch PROD REDIS server and make sure its in the right security group for PROD security group to access it @done (14-06-30 12:45)
+    
+    RDS:
+     ✔ Create VPC Subnets (2) to ensure failover between different availability zone. RDS will not allow us to create a zone without this. @done (14-06-30 14:02)
+     ✔ Create a dB subnet group @done (14-06-30 14:02)
+     ✔ Launch DEV RDS server and make sure its in the right security group for DEV security group to access it @done (14-06-30 14:02)
+         ✔ Create DEV database @done (14-06-30 14:02)
+         ✔ Create STAG database @done (14-06-30 14:02)
+     ✔ Launch PROD RDS server and make sure its in the right security group for PROD security group to access it @done (14-06-30 14:02)
+
+    S3:
+     ☐ Create DEV S3 bucket, remembering that the bucket name must match the domain! ( WHY??? )
+         ✔ Add CORS configuration @done (14-07-01 15:40)
+             ✔ Use the default one, you just have to save it @done (14-07-01 15:40)
+         ✔ Add S3 Static website hosting @done (14-07-01 15:40)
+             ☐ index document: index.html
+             ☐ error document: index.html
+     ✔ Create STAG S3 bucket, remembering that the bucket name must match the domain! @done (14-07-01 15:40)
+         ✔ Add CORS configuration @done (14-07-01 15:40)
+             ✔ Use the default one, you just have to save it @done (14-07-01 15:40)
+         ✔ Add S3 Static website hosting @done (14-07-01 15:40)
+             ✔ index document: index.html @done (14-07-01 15:40)
+             ✔ error document: index.html @done (14-07-01 15:40)
+     ✔ Create PROD S3 bucket, remembering that the bucket name must match the domain! @done (14-07-01 15:40)
+         ✔ Add CORS configuration @done (14-07-01 15:40)
+             ✔ Use the default one, you just have to save it @done (14-07-01 15:40)
+         ✔ Add S3 Static website hosting @done (14-07-01 15:40)
+             ✔ index document: index.html @done (14-07-01 15:40)
+             ✔ error document: index.html @done (14-07-01 15:40)
+     ☐ Create Cloudfront configuration for PROD s3 bucket
+
+Load Balancing:
+     ☐  Setup load balancer
+
+Nginx:
+     ☐ Setup Nginx with MySql and Tarball deployment
+
+
+Monitoring:
+     ☐ Add New Relic configuration 
+     ☐ Add Zabbix Automatic Configuration 
+
+General:
+    ☐ Verify that the server pulling and deploying the tar.gz has done so successfully 

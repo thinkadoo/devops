@@ -1,0 +1,20 @@
+Questions:
+ ✔ When will the release.sh script be run @done (14-07-01 08:02)
+ ☐ When will the load balancer come into play
+ ✔ We haven't prepared a deployment ec2 machine yet? @done (14-07-01 08:02)
+ ☐ Is the practise to deploy the DEV and STAG directly to S3 bucket and serve from there, in line with TDD practise
+ ✔ VPC -> Elastic IPs - Elastic IP associated with each of the private addresses @done (14-07-01 08:44)
+ ☐ Why does the NAT machine have an elastic ip
+ ☐ Why is the source of the 3306 rule the security group? (All instances belonging to that security group?)
+ ☐ dB Migrations
+
+TODO:
+ ☐ Deploy non-node project running using nginx / apache
+ ☐ .Net Setup and Deployment
+ ☐ VPN Deployment Jenkins -> VPN dotNET environment
+
+
+
+
+
+

@@ -1,0 +1,40 @@
+Scope:
+  General
+   ✔ Write base scriptsw @done (14-07-04 10:04)
+     ✔ release.sh @done (14-07-04 10:04)
+     ✔ userdata.sh @done (14-07-04 10:04)
+   ✔ NodeJS AMI @done (14-07-04 10:04)
+   ✔ Install & Configure NGINX @done (14-07-04 10:04)
+   ✔ Install & Configure Hipchat @done (14-07-04 10:04)
+   ☐ Install & Configure Newrelic
+   ✔ Install & Configure NodeJS, NPM - forever and other related libs @done (14-07-04 10:04)
+   ✔ Test & Ensure working with Jenkins @done (14-07-04 10:10)
+   ☐ Change management documentation for solution
+   ☐ Provide templates for management of change over time (ITIL)
+   
+  AWS
+   ✔ server @done (14-07-04 10:06)
+   ✔ database @done (14-07-04 10:06)
+   ✔ cache @done (14-07-04 10:06)
+   ✔ vpc @done (14-07-04 10:06)
+   ✔ scaling @done (14-07-04 10:06)
+   ✔ load balance @done (14-07-04 10:06)
+   ✔ S3 bucket @done (14-07-04 10:06)
+   ✔ IAM @done (14-07-04 10:06)
+   ✔ Jekins deploy of release & userdata scripts @done (14-07-04 10:07)
+   ✔ Jenkins @done (14-07-04 10:07)
+   ✔ base config @done (14-07-04 10:07)
+   ✔ DEV, STAG, PROD configs @done (14-07-04 10:07)
+
+  Project configs
+   ☐ Installation & Configuration of clever-orm and clever-auth modules 
+   ☐ Unit Tests                 (Cleverstack)
+   ☐ Integration tests        (Cleverstack)
+   ☐ End-to-end tests      (Cleverstack)
+   ☐ Hookup project communication/notification/commands (eg. Jenkins/Git/Amazon) with Hipchat
+   ☐ Hookup with Hubot
+   ☐ Write base
+ITE Priorities:
+  ☐ Testing processflow with Jenkins
+  ☐ System monitoring (Hipchat/Hubot/Newrelic etc.)
+  ☐ Documentation

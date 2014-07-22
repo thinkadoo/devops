@@ -2,7 +2,7 @@
 
 ## ------ START:	Standard Config Elements ------ ##
 export NODE_ENV='DEV'
-export PROJECT_NAME='wsims_lp'
+export PROJECT_NAME='dbis'
 export SCRIPT_NAME='release.sh'
 export NODE_PATH='./lib/:./modules/'
 export DEBUG=*

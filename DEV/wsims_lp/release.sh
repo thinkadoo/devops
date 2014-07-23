@@ -143,7 +143,7 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 		grunt db
 
 		cd $DEPLOYMENT_DIR
-		ln -f -n -s $BUILDDIR $CURRENTDIR
+		sudo ln -f -n -s $BUILDDIR $CURRENTDIR
 
 		cd $CURRENTDIR
 

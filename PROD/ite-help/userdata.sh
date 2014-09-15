@@ -2,7 +2,7 @@
 
 ## ------ START:	Standard Config Elements ------ ##
 export ENV='PROD'
-export PROJECT_NAME='ite_help'
+export PROJECT_NAME='ite-help'
 export SCRIPT_NAME='release.sh'
 export S3_DEPLOYMENT_KEY='AKIAIXQVFPNVFROQMJMQ'
 # Rember that if this contains \ or / you need to escape that with \

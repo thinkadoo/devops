@@ -2,7 +2,7 @@
 
 ## ------ START:	Standard Config Elements ------ ##
 export NODE_ENV='PROD'
-export PROJECT_NAME='ite_help'
+export PROJECT_NAME='ite-help'
 export SCRIPT_NAME='release.sh'
 export NODE_PATH='./lib/:./modules/'
 export DEBUG=*

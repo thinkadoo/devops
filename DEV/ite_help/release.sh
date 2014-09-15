@@ -5,7 +5,7 @@ export NODE_ENV='DEV'
 export PROJECT_NAME='ite_help'
 export SCRIPT_NAME='release.sh'
 export NODE_PATH='./lib/:./modules/'
-export DEBUG=*
+##export DEBUG=*
 ## ------ END:		Standard Config Elements ------ ##
 
 

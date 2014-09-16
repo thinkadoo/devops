@@ -132,11 +132,11 @@ if [ $RELEASE_VERSION_DIFF -eq 0 ]; then
 		cd $BUILDDIR
 		tar -xzvf /opt/$PROJECT_NAME.tgz
 
-		echo "PID:$SCRIPT_PID - $(date) | Running npm install..."
-		npm install
+	#	echo "PID:$SCRIPT_PID - $(date) | Running npm install..."
+	#	npm install
 
-		echo "PID:$SCRIPT_PID - $(date) | Running clever setup..."
-		sudo clever setup
+	#	echo "PID:$SCRIPT_PID - $(date) | Running clever setup..."
+	#	sudo clever setup
 		sudo chown -R ubuntu:ubuntu $BUILDDIR/node_modules
 		
 		##Remove in PROD to NOT re-generate dB from Models
